@@ -1,6 +1,6 @@
 /************************* Métodos os dados das partidas *************************/
 var  urlPartidas;
-urlPartidas ="https://jsonserver-partidas-1.nayarissonnatan.repl.co/partidas";
+urlPartidas ="https://89dac0ee-fe12-4dc7-abde-e6f4f03b17cd-00-1asbl4zohyio9.spock.repl.co:3000/partidas";
 
 var partidas = [];
 
@@ -16,9 +16,11 @@ LeDadosPartidas()
 
 //Obtendo os usuários cadastrados no site pelo JSONServer
 var urlUsuarios;
-urlUsuarios =  "https://jsonserver-partidas-1.nayarissonnatan.repl.co/usuarios";
+urlUsuarios =  "https://89dac0ee-fe12-4dc7-abde-e6f4f03b17cd-00-1asbl4zohyio9.spock.repl.co:3000/usuarios";
 var usuarios = [];
 
+
+//fazer get na api
 async function LeDadosUsuarios() {
 
   const res = await fetch(urlUsuarios)
@@ -77,6 +79,7 @@ async function AtualizaLotacao(id) {
 var atualizapartidas = [];
 var ComEspaco = false;
 
+//em partidas
 async function AtualizaPartidasUsuario(IdUsuario, IdPartida) {
   await LeDadosUsuarios();
 
@@ -84,6 +87,7 @@ async function AtualizaPartidasUsuario(IdUsuario, IdPartida) {
   let tamvetor = usuarios[indice].partidas.length;
   let jaParticipa = false;
 
+//validando se tem espaço numa dada partida
 if(partidas[IdPartida].lotacao < partidas[IdPartida].Jogadores)
 {
   ComEspaco = true;
@@ -167,7 +171,7 @@ var elementId;
 
 //código para abrir as notificações de êxito
 
-//passado para rotinas!
+//em rotinas!
 var appendAlert =  (message, type, icon) => {
   var alertPlaceholder = document.getElementById("liveAlertPlaceholder");
   const wrapper = document.createElement("div");

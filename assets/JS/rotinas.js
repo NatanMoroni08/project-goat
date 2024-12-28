@@ -1,21 +1,44 @@
 function rotinasUsuario() {
-  //this.addPartida = 
-  //this.rmPartida = 
-  //this.logoff = 
-  //this.login = 
+  //this.addPartida =
   //this.updatePerfil =
+  //this.rmvPartida = 
+  //this.logoff = 
+  this.login = () => {
+    //capturando o elemento html e adicionando ouvinte de evento
+    document.getElementById("submit").addEventListener("click", async () => {
+      try {
+        let email = document.getElementById("email").value;
+        let senha = document.getElementById("senha").value;
+        let UsuarioSessao = await util.procurarUsuario(email);
+        let loginEhValido = await util.loginSenhaCorretos(email, senha);
+        //verificando se os valores não são nulos
+        if (!email || !senha) {
+          throw new TypeError("Preencha todos os campos")
+        }
+        else if (loginEhValido) {
+          //verificando se o login e senha fornecidos estão corretos
+          window.location.href = 'home_pos_login.html'
+          util.salvarDadosLocalStorage('session', UsuarioSessao.id)
+        }
+        else {
+          console.info("login ou senha inválidos");
+          console.log(loginOK)
+        }
+      } catch (e) {
+        e instanceof TypeError ? console.log("Erro de tipo ou preenchimento: ", e.message) : console.error("erro: ", e)
+      }
+    });
+  }
 }
-
 function retornosFront() {
   //abre um spinner de carregamento de informação
-  /*this.abrirSpinnerCarregamento(){
-  document.querySelector(".carregamento").style.display = "none";
-  }*/
-  //fecha um spinner de carregamento de informação
-  /*this.fecharSpinnerCarregamento(){
-      document.querySelector(".carregamento").style.display = "flex";
+  this.abrirSpinnerCarregamento = () => {
+    document.querySelector(".carregamento").style.display = "none";
   }
-  */
+  //fecha um spinner de carregamento de informação
+  this.fecharSpinnerCarregamento = () => {
+    document.querySelector(".carregamento").style.display = "flex";
+  }
   /*this.iniciarCarregamentoEntrePaginas*/
   this.exibirNotificacao = (message, type, icon) => {
     const wrapper = document.createElement("div");
@@ -81,33 +104,68 @@ function retornosFront() {
       document.getElementById(valor).textContent = chave + ": " + partida[chave];
     });
   }
-
-  function processaDados() {
-    //retorna a partida seleciona pelo usuário ou null caso não encontrada
-    this.retornarPartidaSelecionada = (partidas, idCardClicado) => {
-      partidas.forEach((partida) => {
-        if (partida.id == idCardClicado) {
-          return partida;
-        }
-      })
-      return null
-    }
-    //retorna id da Partida selecionada
-    this.idPartidaSelecionada = () => {
-      Array.from(openPopupButtons).forEach(function (button) {
-        button.addEventListener("click", function () {
-          // Obtém o id do card clicado
-          idCardSelecionada = button.id;
-          console.log(idCardSelecionada);
-          return idCardSelecionada;
-        });
-      });
-    }
+}
+function processaDados() {
+  //retorna a partida seleciona pelo usuário ou null caso não encontrada
+  this.retornarPartidaSelecionada = (partidas, idCardClicado) => {
+    partidas.forEach((partida) => {
+      if (partida.id == idCardClicado) {
+        return partida;
+      }
+    })
+    return null
   }
+  //retorna id da Partida selecionada
+  this.idPartidaSelecionada = () => {
+    Array.from(openPopupButtons).forEach(function (button) {
+      button.addEventListener("click", function () {
+        // Obtém o id do card clicado
+        idCardSelecionada = button.id;
+        console.log(idCardSelecionada);
+        return idCardSelecionada;
+      });
+    });
+  }
+
   this.lerLocalStorage = () => {
     let strdados = localStorage.getItem('db');
     //se não houver dados no localStorage, retona erro
-    strdados ? JSON.parse(strdados):console.log("Usuário não encontrado")
-    
+    strdados ? JSON.parse(strdados) : console.log("Usuário não encontrado")
+
+  }
+  this.procurarUsuario = async (login) => {
+    let usuarios = await api.get('usuarios')
+    let usuarioEcontrado;
+
+    usuarioEcontrado = usuarios.find((usuario) => usuario.email == login);
+
+    // Verifica se o usuário foi encontrado
+    if (!usuarioEcontrado) {
+      console.info("Usuário não encontrado");
+    } else {
+      console.info("Usuário Encontrado");
+    }
+    return usuarioEcontrado;
+  }
+  this.partidaComEspaco = (partida) => {
+    return partida.lotacao < partida.Jogadores
+  }
+  this.atualizarLotação = (id) => {
+    let dados = {
+      "lotacao": partidas[id].lotacao + 1
+    }
+    api.patch(`partidas/${id}`, dados);
+  }
+
+  this.loginSenhaCorretos = async (login, snh) => {
+    let usuarioSessao = await this.procurarUsuario(login);
+    if (!usuarioSessao) {
+      console.info("Não existe usuário com esse login");
+      return false;  // Retorna false caso o usuário não exista
+    }
+    return usuarioSessao.senha == snh;
+  }
+  this.salvarDadosLocalStorage = (chave, dados) => {
+    localStorage.setItem(chave, JSON.stringify(dados));
   }
 }

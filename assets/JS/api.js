@@ -1,5 +1,5 @@
 function API() {
-    const API_URL = "https://89dac0ee-fe12-4dc7-abde-e6f4f03b17cd-00-1asbl4zohyio9.spock.repl.co:3000/";
+    const API_URL = "https://89dac0ee-fe12-4dc7-abde-e6f4f03b17cd-00-1asbl4zohyio9.spock.repl.co:3000";
   
     this.get = async (endpoint) => {
       const urlRequisicao = API_URL + "/" + endpoint;
@@ -37,7 +37,7 @@ function API() {
   
     this.patch = async (endpoint, body) => {
       const urlRequisicao = API_URL + "/" + endpoint;
-  
+
       const res = await fetch(urlRequisicao, {
         method: "PATCH",
         headers: {

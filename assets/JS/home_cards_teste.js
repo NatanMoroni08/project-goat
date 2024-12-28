@@ -39,6 +39,7 @@ function LeLocalStorage() {
   return objdado;
 }
 
+//em rotinas, adapdata
 async function ProcuraIdUsuario() {
   var NovoParticipante;
 
