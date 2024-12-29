@@ -5,7 +5,9 @@ function rotinasUsuario() {
   //this.logoff = 
   this.login = () => {
     //capturando o elemento html e adicionando ouvinte de evento
-    document.getElementById("submit").addEventListener("click", async () => {
+    const button = document.querySelector('#submitLogin');
+    console.log(button)
+    button.addEventListener('click', async () => {
       try {
         let email = document.getElementById("email").value;
         let senha = document.getElementById("senha").value;
@@ -33,11 +35,11 @@ function rotinasUsuario() {
 function retornosFront() {
   //abre um spinner de carregamento de informação
   this.abrirSpinnerCarregamento = () => {
-    document.querySelector(".carregamento").style.display = "none";
+    document.querySelector(".carregamento").style.display = "flex";
   }
   //fecha um spinner de carregamento de informação
   this.fecharSpinnerCarregamento = () => {
-    document.querySelector(".carregamento").style.display = "flex";
+    document.querySelector(".carregamento").style.display = "none";
   }
   /*this.iniciarCarregamentoEntrePaginas*/
   this.exibirNotificacao = (message, type, icon) => {
@@ -66,7 +68,7 @@ function retornosFront() {
       acc += `
             <div class="card-participar col-sm-6 col-md-4 col-lg-3">
             <div class="card">
-              <img src="/codigo/assets/images/Quadracard.jpg" class="card-img-top" alt="...">
+              <img src="../assets/images/Quadracard.jpg" class="card-img-top" alt="...">
               <div class="card-body d-flex flex-column">
                 <p class="card-title">Criado por: ${partidas.Criador}</p>
                 <p class="card-text">Jogadores: ${partidas.lotacao}/${partidas.Jogadores}</p>
@@ -82,47 +84,77 @@ function retornosFront() {
 
       return acc;
     }, "");
-
+    console.log("chegou no get")
     document.getElementById("linha-cards").innerHTML = html;
   }
   //retorna
   //this.AbrirPopupPartida =
   this.inserirDadosPopUp = (partida) => {
-    var elemetosPopUp = {
-      "Criador": "p-criador",
-      "Esporte": "p-esporte",
-      "Data": "p-data",
-      "Horario": "p-horario",
-      "Jogadores": "p-jogadores",
-      "Categoria": "p-categoria",
-      "Obrigatorio": "p-obrigatorio"
-    };
-
-    // Itera sobre as entradas de 'elemetosPopUp' e insere os dados no pop-up
-    Object.entries(elemetosPopUp).forEach(([chave, valor]) => {
-      // Corrige a sintaxe de textContent
-      document.getElementById(valor).textContent = chave + ": " + partida[chave];
-    });
+    try {
+      if (!partida) {
+        throw new TypeError("A partida selecionada está vazia");
+      }
+  
+      // Definindo os elementos do pop-up e suas respectivas chaves da partida
+      var elementosPopUp = {
+        "Criador": "p-criador",
+        "Esporte": "p-esporte",
+        "Data": "p-data",
+        "Horario": "p-horario",
+        "Jogadores": "p-jogadores",
+        "Categoria": "p-categoria",
+        "Obrigatorio": "p-obrigatorio"
+      };
+  
+      console.log(partida);
+  
+      // Itera sobre as entradas de 'elementosPopUp' e insere os dados no pop-up
+      Object.entries(elementosPopUp).forEach(([chave, valor]) => {
+        // Verificar se a chave existe na partida antes de atribuir
+        const valorDaChave = partida[chave];
+        
+        // Se a chave não existir ou for inválida, pode-se atribuir uma mensagem padrão ou deixar vazio
+        if (valorDaChave) {
+          document.getElementById(valor).textContent = chave + ": " + valorDaChave;
+        } else {
+          document.getElementById(valor).textContent = chave + ": Não disponível"; // Mensagem padrão
+        }
+      });
+  
+    } catch (e) {
+      if (e instanceof TypeError) {
+        console.error("Erro: " + e.message);
+      } else {
+        console.error("Erro inesperado: " + e.message);
+      }
+    }
   }
+  
 }
 function processaDados() {
   //retorna a partida seleciona pelo usuário ou null caso não encontrada
   this.retornarPartidaSelecionada = (partidas, idCardClicado) => {
-    partidas.forEach((partida) => {
-      if (partida.id == idCardClicado) {
-        return partida;
-      }
-    })
-    return null
-  }
+    // Imprimir a entrada de dados para depuração
+    console.log('Partidas:', partidas);
+    console.log('idCardClicado:', idCardClicado);
+
+    // Tentar forçar os tipos de dados para garantir que sejam comparáveis
+    const partidaSelecionada = partidas.find(partida => String(partida.id) === String(idCardClicado));
+
+    // Imprimir o resultado encontrado para depuração
+    console.log('Partida selecionada:', partidaSelecionada);
+
+    // Se uma partida for encontrada, retorna ela, caso contrário, retorna null
+    return partidaSelecionada || null;
+}
+
   //retorna id da Partida selecionada
-  this.idPartidaSelecionada = () => {
-    Array.from(openPopupButtons).forEach(function (button) {
+  this.idPartidaSelecionada = (classButton) => {
+    Array.from(classButton).forEach(function (button) {
       button.addEventListener("click", function () {
         // Obtém o id do card clicado
-        idCardSelecionada = button.id;
-        console.log(idCardSelecionada);
-        return idCardSelecionada;
+        
+        return button.id;
       });
     });
   }
