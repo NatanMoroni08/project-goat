@@ -6,7 +6,7 @@ function rotinasUsuario() {
   this.login = () => {
     //capturando o elemento html e adicionando ouvinte de evento
     const button = document.querySelector('#submitLogin');
-    console.log(button)
+
     button.addEventListener('click', async () => {
       try {
         let email = document.getElementById("email").value;
@@ -23,10 +23,11 @@ function rotinasUsuario() {
           util.salvarDadosLocalStorage('session', UsuarioSessao.id)
         }
         else {
+          //adicionar logs às mensagens personalizadas da plataforma
           console.info("login ou senha inválidos");
-          console.log(loginOK)
         }
       } catch (e) {
+        //adicionar logs às mensagens personalizadas da plataforma
         e instanceof TypeError ? console.log("Erro de tipo ou preenchimento: ", e.message) : console.error("erro: ", e)
       }
     });
@@ -84,7 +85,6 @@ function retornosFront() {
 
       return acc;
     }, "");
-    console.log("chegou no get")
     document.getElementById("linha-cards").innerHTML = html;
   }
   //retorna
@@ -105,8 +105,6 @@ function retornosFront() {
         "Categoria": "p-categoria",
         "Obrigatorio": "p-obrigatorio"
       };
-  
-      console.log(partida);
   
       // Itera sobre as entradas de 'elementosPopUp' e insere os dados no pop-up
       Object.entries(elementosPopUp).forEach(([chave, valor]) => {
@@ -134,15 +132,9 @@ function retornosFront() {
 function processaDados() {
   //retorna a partida seleciona pelo usuário ou null caso não encontrada
   this.retornarPartidaSelecionada = (partidas, idCardClicado) => {
-    // Imprimir a entrada de dados para depuração
-    console.log('Partidas:', partidas);
-    console.log('idCardClicado:', idCardClicado);
 
     // Tentar forçar os tipos de dados para garantir que sejam comparáveis
     const partidaSelecionada = partidas.find(partida => String(partida.id) === String(idCardClicado));
-
-    // Imprimir o resultado encontrado para depuração
-    console.log('Partida selecionada:', partidaSelecionada);
 
     // Se uma partida for encontrada, retorna ela, caso contrário, retorna null
     return partidaSelecionada || null;
@@ -150,14 +142,16 @@ function processaDados() {
 
   //retorna id da Partida selecionada
   this.idPartidaSelecionada = (classButton) => {
-    Array.from(classButton).forEach(function (button) {
-      button.addEventListener("click", function () {
-        // Obtém o id do card clicado
-        
-        return button.id;
-      });
+    return new Promise((resolve) => {
+        Array.from(classButton).forEach((button) => {
+            button.addEventListener("click", function () {
+                // Quando o botão for clicado, resolvemos a Promise com o ID
+                resolve(button.id);
+            });
+        });
     });
-  }
+};
+
 
   this.lerLocalStorage = () => {
     let strdados = localStorage.getItem('db');
