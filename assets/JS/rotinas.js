@@ -1,5 +1,12 @@
 function rotinasUsuario() {
-  //this.addPartida =
+  this.addPartida = async (idPartida) => {
+    let idUsuarioLogado = util.qualUsuarioLogado();
+    let objUsuario = await api.get("usuarios")
+    let dados = {
+      "partidas": objUsuario[idUsuarioLogado].partidas.push(idPartida)
+    }
+    api.patch("usuarios", dados)
+  }
   //this.updatePerfil =
   //this.rmvPartida = 
   //this.logoff = 
@@ -94,7 +101,7 @@ function retornosFront() {
       if (!partida) {
         throw new TypeError("A partida selecionada está vazia");
       }
-  
+
       // Definindo os elementos do pop-up e suas respectivas chaves da partida
       var elementosPopUp = {
         "Criador": "p-criador",
@@ -105,12 +112,12 @@ function retornosFront() {
         "Categoria": "p-categoria",
         "Obrigatorio": "p-obrigatorio"
       };
-  
+
       // Itera sobre as entradas de 'elementosPopUp' e insere os dados no pop-up
       Object.entries(elementosPopUp).forEach(([chave, valor]) => {
         // Verificar se a chave existe na partida antes de atribuir
         const valorDaChave = partida[chave];
-        
+
         // Se a chave não existir ou for inválida, pode-se atribuir uma mensagem padrão ou deixar vazio
         if (valorDaChave) {
           document.getElementById(valor).textContent = chave + ": " + valorDaChave;
@@ -118,7 +125,7 @@ function retornosFront() {
           document.getElementById(valor).textContent = chave + ": Não disponível"; // Mensagem padrão
         }
       });
-  
+
     } catch (e) {
       if (e instanceof TypeError) {
         console.error("Erro: " + e.message);
@@ -127,7 +134,7 @@ function retornosFront() {
       }
     }
   }
-  
+
 }
 function processaDados() {
   //retorna a partida seleciona pelo usuário ou null caso não encontrada
@@ -138,19 +145,19 @@ function processaDados() {
 
     // Se uma partida for encontrada, retorna ela, caso contrário, retorna null
     return partidaSelecionada || null;
-}
+  }
 
   //retorna id da Partida selecionada
   this.idPartidaSelecionada = (classButton) => {
     return new Promise((resolve) => {
-        Array.from(classButton).forEach((button) => {
-            button.addEventListener("click", function () {
-                // Quando o botão for clicado, resolvemos a Promise com o ID
-                resolve(button.id);
-            });
+      Array.from(classButton).forEach((button) => {
+        button.addEventListener("click", function () {
+          // Quando o botão for clicado, resolvemos a Promise com o ID
+          resolve(button.id);
         });
+      });
     });
-};
+  };
 
 
   this.lerLocalStorage = () => {
@@ -176,11 +183,15 @@ function processaDados() {
   this.partidaComEspaco = (partida) => {
     return partida.lotacao < partida.Jogadores
   }
-  this.atualizarLotação = (id) => {
+  this.atualizarLotação = (partidas, id) => {
     let dados = {
       "lotacao": partidas[id].lotacao + 1
     }
     api.patch(`partidas/${id}`, dados);
+  }
+  this.temEspacoNaPartida = (partida) => {
+    console.log(partida.lotacao)
+    return partida.lotacao < partida.Jogadores;
   }
 
   this.loginSenhaCorretos = async (login, snh) => {
@@ -193,5 +204,9 @@ function processaDados() {
   }
   this.salvarDadosLocalStorage = (chave, dados) => {
     localStorage.setItem(chave, JSON.stringify(dados));
+  }
+  this.qualUsuarioLogado = () => {
+    return localStorage.getItem('session');
+
   }
 }

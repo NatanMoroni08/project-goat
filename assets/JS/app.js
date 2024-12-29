@@ -16,17 +16,18 @@ async function iniciarSistema() {
 
         case '/pages/home_pos_login.html':
             front.abrirSpinnerCarregamento();
-            // Fazendo a chamada à API e esperando a resposta
             let partidas = await api.get("partidas");
             // Chama a função assíncrona para verificar as partidas exibidas na home
-            const partidasExibidas = await partidasCadastradasExibidas(partidas);
+            const partidasExibidas = await partidasExibidasHome(partidas);
             if (partidasExibidas) {
                 console.log("partidas exibidas na home");
             } else {
                 console.log("partidas não exibidas");
             }
             front.fecharSpinnerCarregamento();
-            cliqueNoCard(partidas);
+            let idPartidaSelecionada = await esperarcliqueCard();
+            cliqueNoCard(partidas, idPartidaSelecionada);
+            cliqueParticipar(partidas, idPartidaSelecionada);
             break;
 
         // Você pode adicionar outros casos conforme necessário, como outras páginas da sua aplicação
@@ -37,7 +38,7 @@ async function iniciarSistema() {
 }
 
 // Função assíncrona para verificar se as partidas foram cadastradas e exibidas
-async function partidasCadastradasExibidas(partidas) {
+async function partidasExibidasHome(partidas) {
     try {
         // Verificando se há partidas recebidas
         if (!partidas || partidas.length === 0) {
@@ -54,18 +55,38 @@ async function partidasCadastradasExibidas(partidas) {
         return false;  // Retorna falso se ocorrer algum erro
     }
 }
-async function cliqueNoCard(partidas) {
+async function esperarcliqueCard() {
     let btnPopUps = document.getElementsByClassName("openPopupButton");
     // Aguarda até que um botão seja clicado
     let idPartidaSelecionada = await util.idPartidaSelecionada(btnPopUps);
+    return idPartidaSelecionada;
+}
+async function cliqueNoCard(partidas, idPartidaSelecionada) {
     // Busca a partida correspondente pelo ID
-    let partidaSelecionada = util.retornarPartidaSelecionada(partidas, idPartidaSelecionada);
+    let objPrtidaSelecionada = util.retornarPartidaSelecionada(partidas, idPartidaSelecionada);
 
     // Atualiza o front com os dados da partida
-    if (partidaSelecionada) {
-        front.inserirDadosPopUp(partidaSelecionada);
+    if (objPrtidaSelecionada) {
+        front.inserirDadosPopUp(objPrtidaSelecionada);
     } else {
         //adicionar logs às mensagens personalizadas da plataforma
         console.error("Partida não encontrada para o ID:", idPartidaSelecionada);
     }
 }
+async function cliqueParticipar(partidas, idPartida) {
+    let btnParticipar = document.getElementById('participar');
+    btnParticipar.addEventListener("click", ()=> {
+        let partidaSelecionada = util.retornarPartidaSelecionada(partidas, idPartida)
+    if(util.temEspacoNaPartida(partidaSelecionada)){
+        usuario.addPartida(idPartida);
+        util.atualizarLotação(partidas, idPartida)
+    }
+    else{
+        //adicionar logs às mensagens personalizadas da plataforma
+        console.log("Partida cheia");
+    }
+    })
+}
+//SÓ PRECISO SABER O ID DA PARTIDA, NÃO PRECISO DO OBJ PARTIDA, SABENDO O ID EU JÁ ACESSO O OBJETO ESPECÍFICO
+//ESTÁ CAPTURANDO APENAS O PRIMEIRO CLIQUE E NÃO ATUALIZANDO A VARIÁVEL
+//ESTÁ ACONTECENDO SOMA DE STRNGS NA LOTAÇÃO
