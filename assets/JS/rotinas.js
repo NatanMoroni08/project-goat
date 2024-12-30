@@ -150,15 +150,15 @@ function processaDados() {
   //retorna id da Partida selecionada
   this.idPartidaSelecionada = (classButton) => {
     return new Promise((resolve) => {
-      Array.from(classButton).forEach((button) => {
-        button.addEventListener("click", function () {
-          // Quando o botão for clicado, resolvemos a Promise com o ID
-          resolve(button.id);
+        Array.from(classButton).forEach((button) => {
+            // Adiciona um único evento de clique
+            button.addEventListener("click", function () {
+                console.log("Botão clicado, ID capturado:", button.id);
+                resolve(button.id); // Atualiza o ID com o botão clicado
+            }, { once: true }); // Garante que o listener será executado apenas uma vez por botão
         });
-      });
     });
-  };
-
+};
 
   this.lerLocalStorage = () => {
     let strdados = localStorage.getItem('db');
@@ -184,8 +184,9 @@ function processaDados() {
     return partida.lotacao < partida.Jogadores
   }
   this.atualizarLotação = (partidas, id) => {
+    let novaLotacao = partidas[id] + 1 
     let dados = {
-      "lotacao": partidas[id].lotacao + 1
+      "lotacao": +partidas[id].lotacao + 1
     }
     api.patch(`partidas/${id}`, dados);
   }

@@ -25,7 +25,10 @@ async function iniciarSistema() {
                 console.log("partidas não exibidas");
             }
             front.fecharSpinnerCarregamento();
-            let idPartidaSelecionada = await esperarcliqueCard();
+            let idPartidaSelecionada = await esperarcliqueCard(); // Atualiza o ID após o clique
+            console.log("ID recebido pela lógica principal:", idPartidaSelecionada);
+
+            // Utilize o ID atualizado nas funções subsequentes
             cliqueNoCard(partidas, idPartidaSelecionada);
             cliqueParticipar(partidas, idPartidaSelecionada);
             break;
@@ -57,17 +60,19 @@ async function partidasExibidasHome(partidas) {
 }
 async function esperarcliqueCard() {
     let btnPopUps = document.getElementsByClassName("openPopupButton");
+
     // Aguarda até que um botão seja clicado
     let idPartidaSelecionada = await util.idPartidaSelecionada(btnPopUps);
+
+    // Log para depuração
+    console.log("ID da partida selecionada atualizado:", idPartidaSelecionada);
+
     return idPartidaSelecionada;
 }
 async function cliqueNoCard(partidas, idPartidaSelecionada) {
-    // Busca a partida correspondente pelo ID
-    let objPrtidaSelecionada = util.retornarPartidaSelecionada(partidas, idPartidaSelecionada);
-
     // Atualiza o front com os dados da partida
-    if (objPrtidaSelecionada) {
-        front.inserirDadosPopUp(objPrtidaSelecionada);
+    if (partidas[idPartidaSelecionada]) {
+        front.inserirDadosPopUp(partidas[idPartidaSelecionada]);
     } else {
         //adicionar logs às mensagens personalizadas da plataforma
         console.error("Partida não encontrada para o ID:", idPartidaSelecionada);
@@ -75,18 +80,23 @@ async function cliqueNoCard(partidas, idPartidaSelecionada) {
 }
 async function cliqueParticipar(partidas, idPartida) {
     let btnParticipar = document.getElementById('participar');
-    btnParticipar.addEventListener("click", ()=> {
-        let partidaSelecionada = util.retornarPartidaSelecionada(partidas, idPartida)
-    if(util.temEspacoNaPartida(partidaSelecionada)){
-        usuario.addPartida(idPartida);
-        util.atualizarLotação(partidas, idPartida)
-    }
-    else{
-        //adicionar logs às mensagens personalizadas da plataforma
-        console.log("Partida cheia");
-    }
-    })
+
+    // Remove event listeners anteriores (opcional)
+    let newBtn = btnParticipar.cloneNode(true);
+    btnParticipar.parentNode.replaceChild(newBtn, btnParticipar);
+
+    // Adiciona o novo listener
+    newBtn.addEventListener("click", () => {
+        let partidaSelecionada = util.retornarPartidaSelecionada(partidas, idPartida);
+        if (util.temEspacoNaPartida(partidaSelecionada)) {
+            usuario.addPartida(idPartida);
+            util.atualizarLotação(partidas, idPartida);
+        } else {
+            console.log("Partida cheia");
+        }
+    });
 }
+
 //SÓ PRECISO SABER O ID DA PARTIDA, NÃO PRECISO DO OBJ PARTIDA, SABENDO O ID EU JÁ ACESSO O OBJETO ESPECÍFICO
 //ESTÁ CAPTURANDO APENAS O PRIMEIRO CLIQUE E NÃO ATUALIZANDO A VARIÁVEL
 //ESTÁ ACONTECENDO SOMA DE STRNGS NA LOTAÇÃO
