@@ -25,7 +25,7 @@ async function iniciarSistema() {
                 console.log("partidas não exibidas");
             }
             front.fecharSpinnerCarregamento();
-            let idPartidaSelecionada = await esperarcliqueCard(); // Atualiza o ID após o clique
+            let idPartidaSelecionada = await esperarcliqueCard();
             console.log("ID recebido pela lógica principal:", idPartidaSelecionada);
 
             // Utilize o ID atualizado nas funções subsequentes
@@ -59,17 +59,16 @@ async function partidasExibidasHome(partidas) {
     }
 }
 async function esperarcliqueCard() {
+    console.log("Pegou o clique no card")
     let btnPopUps = document.getElementsByClassName("openPopupButton");
 
     // Aguarda até que um botão seja clicado
     let idPartidaSelecionada = await util.idPartidaSelecionada(btnPopUps);
 
-    // Log para depuração
-    console.log("ID da partida selecionada atualizado:", idPartidaSelecionada);
-
     return idPartidaSelecionada;
 }
 async function cliqueNoCard(partidas, idPartidaSelecionada) {
+    console.log("Inseriu informações no card")
     // Atualiza o front com os dados da partida
     if (partidas[idPartidaSelecionada]) {
         front.inserirDadosPopUp(partidas[idPartidaSelecionada]);
@@ -89,8 +88,10 @@ async function cliqueParticipar(partidas, idPartida) {
     newBtn.addEventListener("click", () => {
         let partidaSelecionada = util.retornarPartidaSelecionada(partidas, idPartida);
         if (util.temEspacoNaPartida(partidaSelecionada)) {
-            usuario.addPartida(idPartida);
+            let foiAdicionada = usuario.addPartida(idPartida);
+            if(foiAdicionada){
             util.atualizarLotação(partidas, idPartida);
+            }
         } else {
             console.log("Partida cheia");
         }
