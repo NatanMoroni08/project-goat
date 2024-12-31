@@ -181,9 +181,9 @@ function processaDados() {
         Array.from(classButton).forEach((button) => {
             // Adiciona um único evento de clique
             button.addEventListener("click", function () {
-                console.log("Botão clicado, ID capturado:", button.id);
-                resolve(button.id); // Atualiza o ID com o botão clicado
-            }, { once: true }); // Garante que o listener será executado apenas uma vez por botão
+                resolve(button.id); // retorna o id da partida clicada
+                console.log("Botão do card clicado, ID capturado:", button.id);
+            });
         });
     });
 };
@@ -219,7 +219,6 @@ function processaDados() {
     api.patch(`partidas/${id}`, dados);
   }
   this.temEspacoNaPartida = (partida) => {
-    console.log(partida.lotacao)
     return partida.lotacao < partida.Jogadores;
   }
 

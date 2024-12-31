@@ -25,12 +25,19 @@ async function iniciarSistema() {
                 console.log("partidas não exibidas");
             }
             front.fecharSpinnerCarregamento();
-            let idPartidaSelecionada = await esperarcliqueCard();
-            console.log("ID recebido pela lógica principal:", idPartidaSelecionada);
+            let btnAbrirPopUp = document.getElementsByClassName("openPopupButton");
+            let idPartidaSelecionada;
 
-            // Utilize o ID atualizado nas funções subsequentes
-            cliqueNoCard(partidas, idPartidaSelecionada);
-            cliqueParticipar(partidas, idPartidaSelecionada);
+            //aguardar cliques em cards de partidas
+            Array.from(btnAbrirPopUp).forEach((button) => {
+                // Adiciona um único evento de clique
+                button.addEventListener("click", function () {
+                    idPartidaSelecionada = button.id;
+                    console.log("Botão do card clicado, ID capturado:", idPartidaSelecionada);
+                    cliqueNoCard(partidas, idPartidaSelecionada);
+                    cliqueParticipar(partidas, idPartidaSelecionada);
+                });
+            });
             break;
 
         // Você pode adicionar outros casos conforme necessário, como outras páginas da sua aplicação
@@ -59,11 +66,10 @@ async function partidasExibidasHome(partidas) {
     }
 }
 async function esperarcliqueCard() {
-    console.log("Pegou o clique no card")
     let btnPopUps = document.getElementsByClassName("openPopupButton");
-
     // Aguarda até que um botão seja clicado
     let idPartidaSelecionada = await util.idPartidaSelecionada(btnPopUps);
+    console.log("Pegou o clique no card")
 
     return idPartidaSelecionada;
 }
@@ -86,11 +92,10 @@ async function cliqueParticipar(partidas, idPartida) {
 
     // Adiciona o novo listener
     newBtn.addEventListener("click", () => {
-        let partidaSelecionada = util.retornarPartidaSelecionada(partidas, idPartida);
-        if (util.temEspacoNaPartida(partidaSelecionada)) {
+        if (util.temEspacoNaPartida(partidas[idPartida])) {
             let foiAdicionada = usuario.addPartida(idPartida);
-            if(foiAdicionada){
-            util.atualizarLotação(partidas, idPartida);
+            if (foiAdicionada) {
+                util.atualizarLotação(partidas, idPartida);
             }
         } else {
             console.log("Partida cheia");
