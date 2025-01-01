@@ -35,7 +35,7 @@ async function iniciarSistema() {
                     idPartidaSelecionada = button.id;
                     console.log("Botão do card clicado, ID capturado:", idPartidaSelecionada);
                     cliqueNoCard(partidas, idPartidaSelecionada);
-                    cliqueParticipar(partidas, idPartidaSelecionada);
+                    cliqueParticipar(idPartidaSelecionada);
                 });
             });
             break;
@@ -83,7 +83,9 @@ async function cliqueNoCard(partidas, idPartidaSelecionada) {
         console.error("Partida não encontrada para o ID:", idPartidaSelecionada);
     }
 }
-async function cliqueParticipar(partidas, idPartida) {
+async function cliqueParticipar(idPartida) {
+    idPartida = parseInt(idPartida);
+    let partidas = await api.get("partidas")
     let btnParticipar = document.getElementById('participar');
 
     // Remove event listeners anteriores (opcional)
@@ -91,18 +93,12 @@ async function cliqueParticipar(partidas, idPartida) {
     btnParticipar.parentNode.replaceChild(newBtn, btnParticipar);
 
     // Adiciona o novo listener
-    newBtn.addEventListener("click", () => {
-        if (util.temEspacoNaPartida(partidas[idPartida])) {
-            let foiAdicionada = usuario.addPartida(idPartida);
+    newBtn.addEventListener("click", async () => {
+            let foiAdicionada = usuario.addPartida(partidas[idPartida]);
             if (foiAdicionada) {
                 util.atualizarLotação(partidas, idPartida);
             }
-        } else {
-            console.log("Partida cheia");
-        }
     });
 }
 
 //SÓ PRECISO SABER O ID DA PARTIDA, NÃO PRECISO DO OBJ PARTIDA, SABENDO O ID EU JÁ ACESSO O OBJETO ESPECÍFICO
-//ESTÁ CAPTURANDO APENAS O PRIMEIRO CLIQUE E NÃO ATUALIZANDO A VARIÁVEL
-//ESTÁ ACONTECENDO SOMA DE STRNGS NA LOTAÇÃO

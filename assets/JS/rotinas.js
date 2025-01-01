@@ -1,39 +1,43 @@
 function rotinasUsuario() {
-  this.addPartida = async (idPartida) => {
+  this.addPartida = async (partida) => {
+
     let idUsuarioLogado = util.qualUsuarioLogado(); // Obtém o ID do usuário logado
     let objUsuario = await api.get(`usuarios/${idUsuarioLogado}`); // Obtém os dados do usuário logado
 
-    if (objUsuario) {
+    try {
+      if (objUsuario) {
         // Certifica-se de que partidas é um array
         if (!Array.isArray(objUsuario.partidas)) {
-            console.error("O atributo partidas não é um array:", objUsuario.partidas);
-            return;
+          throw new TypeError("partidas em Usuários não é um Array: ", objUsuario.partidas)
         }
         // Verifica se a partida já está no array
-        if (!objUsuario.partidas.includes(idPartida)) {
-            // Adiciona a nova partida ao array de partidas
-            let novasPartidas = [...objUsuario.partidas, parseInt(idPartida)];
-
-            // Dados para enviar no PATCH
-            let dados = {
-                partidas: novasPartidas
-            };
-
-            // Atualiza o servidor com as novas partidas
-            await api.patch(`usuarios/${idUsuarioLogado}`, dados);
-
-            console.log("Partida adicionada com sucesso:", idPartida);
-            return true
-        } else {
-          //adicionar logs às mensagens personalizadas da plataforma
-            console.log("A partida já existe no array de partidas do usuário:", idPartida);
-            return false
+        else if (objUsuario.partidas.includes(parseInt(partida.id))) {
+          console.log("A partida já existe no array de partidas do usuário:", partida.id);
+          return false
         }
-    } else {
-        console.error("Usuário não encontrado para ID:", idUsuarioLogado);
-        return false
+        else if (!util.temEspacoNaPartida(partida)) {
+          console.info("partida cheia")
+          return false;
+        }
+        // Adiciona a nova partida ao array de partidas
+        let novasPartidas = [...objUsuario.partidas, parseInt(partida.id)];
+        // Dados para enviar no PATCH
+        let dados = {
+          partidas: novasPartidas
+        };
+        // Atualiza o servidor com as novas partidas
+        await api.patch(`usuarios/${idUsuarioLogado}`, dados);
+
+        console.log("Partida adicionada com sucesso:", partida.id);
+        return true
+      }
+      else {
+        throw new ReferenceError("O Usuário logado não foi encontrado")
+      }
+    } catch (e) {
+      console.error("Erro: ", e.message)
     }
-};
+  };
 
   //this.updatePerfil =
   //this.rmvPartida = 
@@ -178,15 +182,15 @@ function processaDados() {
   //retorna id da Partida selecionada
   this.idPartidaSelecionada = (classButton) => {
     return new Promise((resolve) => {
-        Array.from(classButton).forEach((button) => {
-            // Adiciona um único evento de clique
-            button.addEventListener("click", function () {
-                resolve(button.id); // retorna o id da partida clicada
-                console.log("Botão do card clicado, ID capturado:", button.id);
-            });
+      Array.from(classButton).forEach((button) => {
+        // Adiciona um único evento de clique
+        button.addEventListener("click", function () {
+          resolve(button.id); // retorna o id da partida clicada
+          console.log("Botão do card clicado, ID capturado:", button.id);
         });
+      });
     });
-};
+  };
 
   this.lerLocalStorage = () => {
     let strdados = localStorage.getItem('db');
@@ -212,7 +216,7 @@ function processaDados() {
     return partida.lotacao < partida.Jogadores
   }
   this.atualizarLotação = (partidas, id) => {
-    let novaLotacao = partidas[id] + 1 
+    let novaLotacao = partidas[id] + 1
     let dados = {
       "lotacao": +partidas[id].lotacao + 1
     }
