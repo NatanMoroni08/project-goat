@@ -41,11 +41,13 @@ function rotinasUsuario() {
   this.criarPartida = async () => {
     let partidas = await api.get('partidas');
     let ultimoId = partidas.length > 0 ? partidas[partidas.length - 1].id : 0; // Garante que existe um ID válido
+    let idCriador = util.lerLocalStorage('session');
 
     // Inicializa o objeto com ID e lotação padrão
     let novaPartida = {
-      id: +ultimoId + 1,
-      lotacao: 1
+      "id": +ultimoId + 1,
+      "idCriador": idCriador,
+      "lotacao": 1
     };
 
     // Estrutura dos elementos do formulário
