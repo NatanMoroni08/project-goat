@@ -40,6 +40,14 @@ async function iniciarSistema() {
             });
             break;
 
+        case '/pages/montarPartida.html':
+            console.log("Carregou a montar")
+            document.getElementById('subimitForm').addEventListener("click", () => {
+                usuario.criarPartida();
+                console.log("partida criada")
+            })
+            break;
+
         // Você pode adicionar outros casos conforme necessário, como outras páginas da sua aplicação
         default:
             console.log("Página não configurada para tratamento.");
@@ -94,11 +102,10 @@ async function cliqueParticipar(idPartida) {
 
     // Adiciona o novo listener
     newBtn.addEventListener("click", async () => {
-            let foiAdicionada = usuario.addPartida(partidas[idPartida]);
-            if (foiAdicionada) {
-                util.atualizarLotação(partidas, idPartida);
-            }
+        let foiAdicionada = usuario.addPartida(partidas[idPartida]);
+        if (foiAdicionada) {
+            util.atualizarLotação(partidas, idPartida);
+        }
     });
 }
-
 //SÓ PRECISO SABER O ID DA PARTIDA, NÃO PRECISO DO OBJ PARTIDA, SABENDO O ID EU JÁ ACESSO O OBJETO ESPECÍFICO

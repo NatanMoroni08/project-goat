@@ -38,6 +38,45 @@ function rotinasUsuario() {
       console.error("Erro: ", e.message)
     }
   };
+  this.criarPartida = async () => {
+    let partidas = await api.get('partidas');
+    let ultimoId = partidas.length > 0 ? partidas[partidas.length - 1].id : 0; // Garante que existe um ID válido
+
+    // Inicializa o objeto com ID e lotação padrão
+    let novaPartida = {
+      id: +ultimoId + 1,
+      lotacao: 1
+    };
+
+    // Estrutura dos elementos do formulário
+    let elementosForm = {
+      "Criador": "nome-criador",
+      "Esporte": "esporte",
+      "Data": "data",
+      "Horario": "horario",
+      "Jogadores": "quantidade-jogadores",
+      "Categoria": "modalidade",
+      "Obrigatorio": "equipamento"
+    };
+
+    // Preenche o objeto novaPartida com os valores do formulário
+    Object.entries(elementosForm).forEach(([chave, valor]) => {
+      let inputValue = document.getElementById(valor)?.value;
+
+      // Validação: impede campos vazios
+      if (!inputValue) {
+        console.error(`O campo ${chave} não foi preenchido.`);
+        throw new Error(`O campo ${chave} é obrigatório.`);
+      }
+
+      // Adiciona os valores ao objeto novaPartida
+      novaPartida[chave] = inputValue;
+    });
+    console.log("Nova partida criada:", novaPartida);
+
+    // Envia os dados para a API
+    await api.post('partidas', novaPartida);
+  };
 
   //this.updatePerfil =
   //this.rmvPartida = 
@@ -192,11 +231,10 @@ function processaDados() {
     });
   };
 
-  this.lerLocalStorage = () => {
-    let strdados = localStorage.getItem('db');
+  this.lerLocalStorage = (property) => {
+    let strdados = localStorage.getItem(property);
     //se não houver dados no localStorage, retona erro
-    strdados ? JSON.parse(strdados) : console.log("Usuário não encontrado")
-
+    return strdados ? JSON.parse(strdados) : null
   }
   this.procurarUsuario = async (login) => {
     let usuarios = await api.get('usuarios')

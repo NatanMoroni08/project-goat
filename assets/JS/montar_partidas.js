@@ -9,8 +9,6 @@ function salvarDados() {
   
 }
 
-//document.querySelector('.btn-success').addEventListener('click', salvarDados);
-
 function Lewan() {
   var tipoQuadra = document.getElementById('inputGroupSelect02').value;
   var numeroJogadores = document.querySelector('input[placeholder="Quantos jogadores?"]').value;
@@ -106,49 +104,4 @@ function Lewan() {
     .catch(error => {
       console.error('Erro ao fazer POST:', error);
     });
-  // const newLocal = fetch('https://jsonserver-partidas-1.nayarissonnatan.repl.co/')
-  //   .then(response => response.json())
-  //   .then(data => {
-  //     const cardsDiv = document.getElementById('cards'); // Substituir 'cards' pelo ID do elemento onde deseja carregar os cards, acho que vai ter que ser no body, vou ter que colocar uma div nele//
-
-
-  //     // Limpa o conteúdo anterior, se houver.
-  //     cardsDiv.innerHTML = '';
-
-  //     // Itera sobre os objetos do JSON e cria os cards.
-  //     data.forEach((objeto, index) => {
-  //       const cardDiv = document.createElement('div');
-  //       cardDiv.className = 'card';
-  //       cardDiv.style = 'width: 18rem;';
-
-  //       const cardBody = document.createElement('div');
-  //       cardBody.className = 'card-body d-flex flex-column';
-
-  //       const titulo = document.createElement('h5');
-  //       titulo.className = 'card-title';
-  //       titulo.textContent = `Item ${index + 1}`;
-
-  //       // Suponhamos que o JSON tenha uma propriedade 'criadoPor'.
-  //       const descricao = document.createElement('p');
-  //       descricao.className = 'card-text';
-  //       descricao.textContent = `Criado por: ${objeto.criadoPor}`;
-
-  //       // Adicione mais elementos conforme necessário para outras propriedades do seu objeto JSON.
-  //       const participarBtn = document.createElement('a');
-  //       participarBtn.href = '#';
-  //       participarBtn.className = 'btn btn-light ms-auto';
-  //       participarBtn.textContent = 'Participar';
-
-  //       cardBody.appendChild(titulo);
-  //       cardBody.appendChild(descricao);
-  //       cardBody.appendChild(participarBtn);
-
-  //       cardDiv.appendChild(cardBody);
-  //       cardsDiv.appendChild(cardDiv);
-  //     });
-  //   })
-  //   .catch(error => console.error('Erro ao carregar dados do JSON:', error));
-
-  // Redirecionamento após o carregamento da página (pode ser removido para redirecionamento imediato)
-  
   }
