@@ -75,6 +75,16 @@ div .modal-header h1
 .modal-dialog{
     width: 100%;
 }
+
+/* Configurando o mapa */
+#map { 
+    position: absolute; 
+    width: 100%;
+    height: 100%;
+    margin: 0% 0 1% 45%;
+    border-radius: 2%;
+}
+
 /* fazendo o elemento de notificação ficar na posição específica da tela  */
 #liveAlertPlaceholder {
     position: fixed;

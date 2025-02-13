@@ -1,7 +1,4 @@
 /* Aplicação das funcionalidades do sistema */
-const util = new processaDados();
-const front = new retornosFront();
-const usuario = new rotinasUsuario();
 const currentPage = window.location.pathname;
 
 // Chama a função principal de navegação
@@ -33,6 +30,8 @@ async function iniciarSistema() {
                 // Adiciona um único evento de clique
                 button.addEventListener("click", function () {
                     idPartidaSelecionada = button.id;
+                    let objPartida = util.retornarPartidaSelecionada(partidas, idPartidaSelecionada)
+                    front.gerarMapa(objPartida.CEP, objPartida.Numero);
                     console.log("Botão do card clicado, ID capturado:", idPartidaSelecionada);
                     cliqueNoCard(partidas, idPartidaSelecionada);
                     cliqueParticipar(idPartidaSelecionada);
@@ -48,7 +47,12 @@ async function iniciarSistema() {
             })
             break;
 
-        // Você pode adicionar outros casos conforme necessário, como outras páginas da sua aplicação
+        case '/pages/minhas_partidas.html':
+            front.abrirSpinnerCarregamento();
+            await usuario.visualizarMinhasPartidas();
+            front.fecharSpinnerCarregamento();
+            break;
+
         default:
             console.log("Página não configurada para tratamento.");
             break;
@@ -108,4 +112,3 @@ async function cliqueParticipar(idPartida) {
         }
     });
 }
-//SÓ PRECISO SABER O ID DA PARTIDA, NÃO PRECISO DO OBJ PARTIDA, SABENDO O ID EU JÁ ACESSO O OBJETO ESPECÍFICO

@@ -58,7 +58,9 @@ function rotinasUsuario() {
       "Horario": "horario",
       "Jogadores": "quantidade-jogadores",
       "Categoria": "modalidade",
-      "Obrigatorio": "equipamento"
+      "Obrigatorio": "equipamento",
+      "CEP": "cep-local",
+      "Numero": "numero-local",
     };
 
     // Preenche o objeto novaPartida com os valores do formulário
@@ -79,6 +81,31 @@ function rotinasUsuario() {
     // Envia os dados para a API
     await api.post('partidas', novaPartida);
   };
+  this.visualizarMinhasPartidas = async () => {
+    let idUsuarioLogado = util.lerLocalStorage('session');  // Lê o ID do usuário logado
+    let usuario = await util.procurarUsuarioId(idUsuarioLogado);  // Busca o usuário
+
+    // Verifica se o usuário foi encontrado e se o array de partidas existe
+    if (!usuario || !usuario.partidas) {
+      console.error("Usuário ou partidas não encontrado.");
+      return;
+    }
+
+    let idPartidas = usuario.partidas;
+    console.log("Partidas do usuário:", idPartidas);
+
+    let partidas = await api.get('partidas');
+    let partidasUsuario = [];
+
+    // Preenche o array partidasUsuario com as partidas que o usuário participa
+    idPartidas.forEach((idpartida) => {
+      // Adiciona a partida ao array de partidas do usuário
+      partidasUsuario.push(util.retornarPartidaSelecionada(partidas, idpartida));
+    });
+
+    // Renderiza os cards das partidas
+    front.renderizarCards(partidasUsuario);
+  };
 
   //this.updatePerfil =
   //this.rmvPartida = 
@@ -91,7 +118,7 @@ function rotinasUsuario() {
       try {
         let email = document.getElementById("email").value;
         let senha = document.getElementById("senha").value;
-        let UsuarioSessao = await util.procurarUsuario(email);
+        let UsuarioSessao = await util.procurarUsuarioLogin(email);
         let loginEhValido = await util.loginSenhaCorretos(email, senha);
         //verificando se os valores não são nulos
         if (!email || !senha) {
@@ -207,19 +234,28 @@ function retornosFront() {
       }
     }
   }
+  this.gerarMapa = async (CEP, numRua) => {
+    let geoLocalizacao = await util.buscarLatEhLong(CEP, numRua)
+    mapboxgl.accessToken = 'pk.eyJ1IjoibmF0YW5tb3JvbmkiLCJhIjoiY201bG9iZmszMHl1dTJucHRlZmQzZTVqaiJ9.NySBMXuz60T3jPCP-4_KkA';
+    const map = new mapboxgl.Map({
+      container: 'map', // container ID
+      style: 'mapbox://styles/mapbox/streets-v12', // style URL
+      center: [geoLocalizacao], // starting position [lng, lat]
+      zoom: 14, // starting zoom
+    });
+  }
 
 }
 function processaDados() {
   //retorna a partida seleciona pelo usuário ou null caso não encontrada
-  this.retornarPartidaSelecionada = (partidas, idCardClicado) => {
+  this.retornarPartidaSelecionada = (partidas, idPartida) => {
 
     // Tentar forçar os tipos de dados para garantir que sejam comparáveis
-    const partidaSelecionada = partidas.find(partida => String(partida.id) === String(idCardClicado));
+    const partidaSelecionada = partidas.find(partida => String(partida.id) === String(idPartida));
 
     // Se uma partida for encontrada, retorna ela, caso contrário, retorna null
     return partidaSelecionada || null;
   }
-
   //retorna id da Partida selecionada
   this.idPartidaSelecionada = (classButton) => {
     return new Promise((resolve) => {
@@ -232,26 +268,38 @@ function processaDados() {
       });
     });
   };
-
   this.lerLocalStorage = (property) => {
     let strdados = localStorage.getItem(property);
     //se não houver dados no localStorage, retona erro
     return strdados ? JSON.parse(strdados) : null
   }
-  this.procurarUsuario = async (login) => {
+  this.procurarUsuarioLogin = async (login) => {
     let usuarios = await api.get('usuarios')
-    let usuarioEcontrado;
+    let usuarioEncontrado;
 
-    usuarioEcontrado = usuarios.find((usuario) => usuario.email == login);
+    usuarioEncontrado = usuarios.find((usuario) => usuario.email == login);
 
     // Verifica se o usuário foi encontrado
-    if (!usuarioEcontrado) {
+    if (!usuarioEncontrado) {
       console.info("Usuário não encontrado");
     } else {
       console.info("Usuário Encontrado");
     }
-    return usuarioEcontrado;
+    return usuarioEncontrado;
   }
+  this.procurarUsuarioId = async (id) => {
+    let usuarios = await api.get('usuarios');
+    let usuarioEncontrado = usuarios.find((usuario) => usuario.id === id);  // Corrigido o nome da variável
+
+    // Verifica se o usuário foi encontrado
+    if (!usuarioEncontrado) {
+      console.info("Usuário não encontrado");
+    } else {
+      console.info("Usuário Encontrado");
+    }
+    return usuarioEncontrado;
+  };
+
   this.partidaComEspaco = (partida) => {
     return partida.lotacao < partida.Jogadores
   }
@@ -267,7 +315,7 @@ function processaDados() {
   }
 
   this.loginSenhaCorretos = async (login, snh) => {
-    let usuarioSessao = await this.procurarUsuario(login);
+    let usuarioSessao = await this.procurarUsuarioLogin(login);
     if (!usuarioSessao) {
       console.info("Não existe usuário com esse login");
       return false;  // Retorna false caso o usuário não exista
@@ -281,4 +329,39 @@ function processaDados() {
     return localStorage.getItem('session');
 
   }
+  this.buscarCEP = async (CEP) => {
+    const urlRequisicao = `https://viacep.com.br/ws/${CEP}/json/`
+    try {
+      if (CEP.length !== 9) {
+        throw new Error("CEP inválido")
+      }
+      const res = await fetch(urlRequisicao)
+      const dados = await res.json()
+      return dados;
+    } catch (e) {
+      console.log("Erro ao ler CEP: " + e.message)
+    }
+  }
+  this.buscarLatEhLong = async (CEP, numRua) => {
+    try {
+      let objEndc = await util.buscarCEP(CEP);
+      let strEndereco = `${objEndc.logradouro}, ${numRua}, ${objEndc.localidade}, ${objEndc.uf}, ${CEP}`
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(strEndereco)}&format=json`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+      let latEhLong = `${data[0].lat}, ${data[0].lon}`;
+
+      if (data.length == null) {
+        throw new Error("latitude e longitude não encontradas")
+      }
+      console.log("lat e long"+latEhLong);
+      return latEhLong;
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+    }
+  }
 }
+const util = new processaDados();
+const front = new retornosFront();
+const usuario = new rotinasUsuario();
