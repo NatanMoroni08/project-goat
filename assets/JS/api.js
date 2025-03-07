@@ -1,5 +1,5 @@
 function API() {
-    const API_URL = "https://8e5a46d3-4893-4298-8570-fd54b4f1a383-00-229tlg2hnslya.kirk.replit.dev:3000";
+    const API_URL = "https://8e5a46d3-4893-4298-8570-fd54b4f1a383-00-229tlg2hnslya.kirk.replit.dev";
   
     this.get = async (endpoint) => {
       const urlRequisicao = API_URL + "/" + endpoint;

@@ -240,7 +240,7 @@ function retornosFront() {
     const map = new mapboxgl.Map({
       container: 'map', // container ID
       style: 'mapbox://styles/mapbox/streets-v12', // style URL
-      center: [geoLocalizacao], // starting position [lng, lat]
+      center: geoLocalizacao, // starting position [lng, lat]
       zoom: 14, // starting zoom
     });
   }
@@ -331,8 +331,8 @@ function processaDados() {
   }
   this.buscarCEP = async (CEP) => {
     const urlRequisicao = `https://viacep.com.br/ws/${CEP}/json/`
-    try {
-      if (CEP.length !== 9) {
+    try { 
+      if (CEP.length !== 8) {
         throw new Error("CEP inválido")
       }
       const res = await fetch(urlRequisicao)
@@ -344,23 +344,32 @@ function processaDados() {
   }
   this.buscarLatEhLong = async (CEP, numRua) => {
     try {
-      let objEndc = await util.buscarCEP(CEP);
-      let strEndereco = `${objEndc.logradouro}, ${numRua}, ${objEndc.localidade}, ${objEndc.uf}, ${CEP}`
-      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(strEndereco)}&format=json`;
+      console.log("CEP buscado: " + CEP)
+        let objEndc = await this.buscarCEP(CEP);
+        let strEndereco = `${objEndc.logradouro}, ${numRua}, ${objEndc.localidade}, ${objEndc.uf}`;
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(strEndereco)}&format=json`;
 
-      const response = await fetch(url);
-      const data = await response.json();
-      let latEhLong = `${data[0].lat}, ${data[0].lon}`;
+        const response = await fetch(url);
 
-      if (data.length == null) {
-        throw new Error("latitude e longitude não encontradas")
-      }
-      console.log("lat e long"+latEhLong);
-      return latEhLong;
+        if (!response.ok) {
+            throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.length === 0) {
+            throw new Error("Latitude e longitude não encontradas");
+        }
+
+        let LongEhlat = [Number(data[0].lon), Number(data[0].lat)];
+        console.log("Long e Lat:", LongEhlat);
+        return LongEhlat;
+
     } catch (error) {
-      console.error("Erro na requisição:", error);
+        console.error("Erro na requisição:", error.message);
+        return null; // Retorna null em caso de erro para evitar exceções inesperadas
     }
-  }
+}
 }
 const util = new processaDados();
 const front = new retornosFront();

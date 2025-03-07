@@ -79,7 +79,7 @@ div .modal-header h1
 /* Configurando o mapa */
 #map { 
     position: absolute; 
-    width: 100%;
+    width:50%;
     height: 100%;
     margin: 0% 0 1% 45%;
     border-radius: 2%;
