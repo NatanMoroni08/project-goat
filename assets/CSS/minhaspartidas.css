@@ -58,6 +58,32 @@ body {
 {
   margin: 0 auto 2px auto;
 }
+/* configurando mapa */
+#map { 
+  position: absolute; 
+  width:50%;
+  height: 100%;
+  margin: 0% 0 1% 45%;
+  border-radius: 2%;
+}
+/* configurando popUp */
+.pop-paragrafos
+{
+  margin-bottom: 1%;
+}
+.pop-paragrafos p
+{
+  margin: 1% 0 1% 0%;
+  text-align: left;
+  border: black;
+  border:solid 1px;
+  border-radius: 20px 20px 20px 20px;
+  padding: 2%;
+  background-color: rgb(237, 236, 236);
+}
+.modal-dialog{
+    width: 100%;
+}
 
 /* Spinner */
 .carregamento {

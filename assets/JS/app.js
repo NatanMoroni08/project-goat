@@ -49,8 +49,27 @@ async function iniciarSistema() {
 
         case '/pages/minhas_partidas.html':
             front.abrirSpinnerCarregamento();
-            await usuario.visualizarMinhasPartidas();
+            //renderizar as partidas do usuário
+            let idUsuarioLogado = util.qualUsuarioLogado();
+            let partidasDoUsuario = await util.partidasDoUsuario(idUsuarioLogado);
+            front.renderizarCards(partidasDoUsuario);
             front.fecharSpinnerCarregamento();
+
+            //pegar clique no card das partidas
+            let btnPopUp = document.getElementsByClassName("openPopupButton");
+            let idPartidaClicada;
+            Array.from(btnPopUp).forEach((button) => {
+                // Adiciona um único evento de clique
+                button.addEventListener("click", function () {
+                    idPartidaClicada = button.id;
+                    let objPartida = util.retornarPartidaSelecionada(partidasDoUsuario, idPartidaClicada)
+                    front.gerarMapa(objPartida.CEP, objPartida.Numero);
+                    console.log("Botão do card clicado, ID capturado:", idPartidaClicada);
+                    console.log(partidasDoUsuario)
+                    cliqueNoCard(partidasDoUsuario, idPartidaClicada);
+                    cliqueParticipar(idPartidaClicada);
+                });
+            });
             break;
 
         default:
@@ -87,9 +106,11 @@ async function esperarcliqueCard() {
 }
 async function cliqueNoCard(partidas, idPartidaSelecionada) {
     console.log("Inseriu informações no card")
+    //buscar partida
+    let partida = partidas.find(partida => String(partida.id) === String(idPartidaSelecionada))
     // Atualiza o front com os dados da partida
-    if (partidas[idPartidaSelecionada]) {
-        front.inserirDadosPopUp(partidas[idPartidaSelecionada]);
+    if (partida) {
+        front.inserirDadosPopUp(partida);
     } else {
         //adicionar logs às mensagens personalizadas da plataforma
         console.error("Partida não encontrada para o ID:", idPartidaSelecionada);

@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/assets/CSS/minhaspartidas.css">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.9.2/mapbox-gl.css' rel='stylesheet' />7
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.9.2/mapbox-gl.js'></script>
         
 </head>
 
@@ -50,6 +52,40 @@
   <!-- Cards de partidas -->
 
   <div class="row g-0" id="linha-cards"> </div> 
+
+  <!-- PopUp do Card de partida -->
+  <div id="separa-modal">
+
+    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Informações</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row" style="position: relative;">
+              <div class="pop-paragrafos col-md-5">
+                <p id="p-criador"></p>
+                <p id="p-esporte"> </p>
+                <p id="p-data"> </p>
+                <p id="p-horario"></p>
+                <p id="p-jogadores"></p>
+                <p id="p-categoria"> </p>
+                <p id="p-obrigatorio"></p>
+              </div>
+              <!-- Mapa -->
+              <div id='map'></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+              <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="participar">Participar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
     
   <!-- Inicio da notificação -->

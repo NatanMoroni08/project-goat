@@ -81,31 +81,6 @@ function rotinasUsuario() {
     // Envia os dados para a API
     await api.post('partidas', novaPartida);
   };
-  this.visualizarMinhasPartidas = async () => {
-    let idUsuarioLogado = util.lerLocalStorage('session');  // Lê o ID do usuário logado
-    let usuario = await util.procurarUsuarioId(idUsuarioLogado);  // Busca o usuário
-
-    // Verifica se o usuário foi encontrado e se o array de partidas existe
-    if (!usuario || !usuario.partidas) {
-      console.error("Usuário ou partidas não encontrado.");
-      return;
-    }
-
-    let idPartidas = usuario.partidas;
-    console.log("Partidas do usuário:", idPartidas);
-
-    let partidas = await api.get('partidas');
-    let partidasUsuario = [];
-
-    // Preenche o array partidasUsuario com as partidas que o usuário participa
-    idPartidas.forEach((idpartida) => {
-      // Adiciona a partida ao array de partidas do usuário
-      partidasUsuario.push(util.retornarPartidaSelecionada(partidas, idpartida));
-    });
-
-    // Renderiza os cards das partidas
-    front.renderizarCards(partidasUsuario);
-  };
 
   //this.updatePerfil =
   //this.rmvPartida = 
@@ -256,6 +231,28 @@ function processaDados() {
     // Se uma partida for encontrada, retorna ela, caso contrário, retorna null
     return partidaSelecionada || null;
   }
+  this.partidasDoUsuario = async (idUsuario) =>{
+    let usuario = await util.procurarUsuarioId(idUsuario);  // Busca o usuário
+
+    // Verifica se o usuário foi encontrado e se o array de partidas existe
+    if (!usuario || !usuario.partidas) {
+      console.error("Usuário ou partidas não encontrado.");
+      return;
+    }
+
+    let idPartidas = usuario.partidas;
+    console.log("Partidas do usuário:", idPartidas);
+
+    let partidas = await api.get('partidas');
+    let partidasUsuario = [];
+
+    // Preenche o array partidasUsuario com as partidas que o usuário participa
+    idPartidas.forEach((idpartida) => {
+      // Adiciona a partida ao array de partidas do usuário
+      partidasUsuario.push(util.retornarPartidaSelecionada(partidas, idpartida));
+    });
+    return partidasUsuario;
+  }
   //retorna id da Partida selecionada
   this.idPartidaSelecionada = (classButton) => {
     return new Promise((resolve) => {
@@ -326,8 +323,8 @@ function processaDados() {
     localStorage.setItem(chave, JSON.stringify(dados));
   }
   this.qualUsuarioLogado = () => {
-    return localStorage.getItem('session');
-
+    let idUsuario = localStorage.getItem('session');
+    return idUsuario ? JSON.parse(idUsuario) : null
   }
   this.buscarCEP = async (CEP) => {
     const urlRequisicao = `https://viacep.com.br/ws/${CEP}/json/`
