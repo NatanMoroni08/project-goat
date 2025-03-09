@@ -1,5 +1,6 @@
 /* Aplicação das funcionalidades do sistema */
-const currentPage = window.location.pathname;
+let repoName = "/project-goat"; 
+let currentPage = window.location.pathname.replace(repoName, "").toLowerCase();
 
 // Chama a função principal de navegação
 iniciarSistema();
