@@ -1,7 +1,12 @@
 /* Aplicação das funcionalidades do sistema */
 let repoName = "/project-goat"; 
 let currentPage = window.location.pathname.replace(repoName, "").toLowerCase();
-console.log(currentPage);
+
+// Adiciona .html se estiver faltando 
+if (!currentPage.endsWith(".html") && currentPage !== "/") { 
+    currentPage += ".html"; 
+} 
+console.log(currentPage);  //imprime resultado
 
 // Chama a função principal de navegação
 iniciarSistema();
