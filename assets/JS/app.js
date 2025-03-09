@@ -67,7 +67,7 @@ async function iniciarSistema() {
                     console.log("Botão do card clicado, ID capturado:", idPartidaClicada);
                     console.log(partidasDoUsuario)
                     cliqueNoCard(partidasDoUsuario, idPartidaClicada);
-                    cliqueParticipar(idPartidaClicada);
+                    cliqueAbandonar(idUsuarioLogado, idPartidaClicada);
                 });
             });
             break;
@@ -120,6 +120,7 @@ async function cliqueParticipar(idPartida) {
     idPartida = parseInt(idPartida);
     let partidas = await api.get("partidas")
     let btnParticipar = document.getElementById('participar');
+    let partidaSelecionada = partidas.find(p => p.id === idPartida);
 
     // Remove event listeners anteriores (opcional)
     let newBtn = btnParticipar.cloneNode(true);
@@ -127,9 +128,28 @@ async function cliqueParticipar(idPartida) {
 
     // Adiciona o novo listener
     newBtn.addEventListener("click", async () => {
-        let foiAdicionada = usuario.addPartida(partidas[idPartida]);
+        let foiAdicionada = usuario.addPartida(partidaSelecionada, util.qualUsuarioLogado());
         if (foiAdicionada) {
             util.atualizarLotação(partidas, idPartida);
         }
     });
+}
+async function cliqueAbandonar(idUsuario, idPartida) {
+    let dadosAtualizados;
+    
+    // Obtém as partidas do usuário
+    let usuario = await util.procurarUsuarioId(idUsuario);
+    let partidasUsuario = usuario.partidas;  
+
+    idPartida = parseInt(idPartida);
+
+    // Cria um novo array sem a partida que foi abandonada
+    let partidasAtualizadas = partidasUsuario.filter(p => p !== idPartida);
+
+    dadosAtualizados = {
+        "partidas": partidasAtualizadas
+    };
+
+    // Realiza a requisição ao servidor para atualizar as partidas do usuário
+    await api.patch(`usuarios/${idUsuario}`, dadosAtualizados);
 }

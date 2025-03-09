@@ -1,8 +1,7 @@
 function rotinasUsuario() {
-  this.addPartida = async (partida) => {
+  this.addPartida = async (partida, idUsuario) => {
 
-    let idUsuarioLogado = util.qualUsuarioLogado(); // Obtém o ID do usuário logado
-    let objUsuario = await api.get(`usuarios/${idUsuarioLogado}`); // Obtém os dados do usuário logado
+    let objUsuario = await api.get(`usuarios/${idUsuario}`); // Obtém os dados do usuário logado
 
     try {
       if (objUsuario) {
@@ -26,7 +25,7 @@ function rotinasUsuario() {
           partidas: novasPartidas
         };
         // Atualiza o servidor com as novas partidas
-        await api.patch(`usuarios/${idUsuarioLogado}`, dados);
+        await api.patch(`usuarios/${idUsuario}`, dados);
 
         console.log("Partida adicionada com sucesso:", partida.id);
         return true
