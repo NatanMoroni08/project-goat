@@ -218,6 +218,45 @@ function retornosFront() {
       zoom: 14, // starting zoom
     });
   }
+  this.renderizarNavbar = () => {
+    let ondeInserir = document.getElementsByClassName('navbar');
+
+    if (ondeInserir.length > 0) {
+        // Descobre se está rodando no GitHub Pages e ajusta o caminho base
+        let basePath = window.location.pathname.includes('/project-goat/') ? '/project-goat' : '';
+
+        ondeInserir[0].innerHTML = `
+        <div class="container-fluid">
+          <div class="container" style="margin-left: 0px; max-width: max-content;">
+            <a class="navbar-brand" href="${basePath}/pages/home_pos_login.html">
+              <img src="${basePath}/assets/images/logo_goat.png" alt="logo_home">
+            </a>
+          </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="${basePath}/pages/minhas_partidas.html">Minhas partidas</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="${basePath}/pages/montarPartida.html">Montar partidas</a>
+              </li>
+            </ul>
+            <div class="profile">
+              <a class="nav-link active" aria-current="page" href="${basePath}/pages/tela_perfil.html">
+                <i class="icone-profile fa-regular fa-user fa-lg"></i>
+              </a>
+            </div>
+          </div>
+        </div>`;
+    } else {
+        console.error("Elemento .navbar não encontrado!");
+    }
+};
+
 
 }
 function processaDados() {
